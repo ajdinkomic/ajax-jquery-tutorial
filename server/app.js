@@ -2,23 +2,28 @@ var express = require("express"),
   app = express(),
   mongoose = require("mongoose"),
   bodyParser = require("body-parser"),
-  expressSanitizer = require("express-sanitizer"),
-  methodOverride = require('method-override');
+  expressSanitizer = require("express-sanitizer");
 
 mongoose.connect("mongodb://localhost/todo_app");
-app.use(express.static('public'));
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(expressSanitizer());
-app.set("view engine", "ejs");
-app.use(methodOverride('_method'));
 
 var todoSchema = new mongoose.Schema({
   text: String,
 });
 
 var Todo = mongoose.model("Todo", todoSchema);
+
+// Enable CORS - Cross-Origin Resource Sharing - so we can access it from the client
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:8000");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  next();
+});
+
 
 app.get("/", function (req, res) {
   res.redirect("/todos");
@@ -63,10 +68,6 @@ app.get("/todos", function (req, res) {
   }
 });
 
-app.get("/todos/new", function (req, res) {
-  res.render("new");
-});
-
 app.post("/todos", function (req, res) {
   req.body.todo.text = req.sanitize(req.body.todo.text); // prevent script injection
   var formData = req.body.todo;
@@ -75,19 +76,6 @@ app.post("/todos", function (req, res) {
       res.render("new");
     } else {
       res.json(newTodo);
-    }
-  });
-});
-
-app.get("/todos/:id/edit", function (req, res) {
-  Todo.findById(req.params.id, function (err, todo) {
-    if (err) {
-      console.log(err);
-      res.redirect("/")
-    } else {
-      res.render("edit", {
-        todo: todo
-      });
     }
   });
 });
