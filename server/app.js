@@ -5,6 +5,7 @@ var express = require("express"),
   expressSanitizer = require("express-sanitizer");
 
 mongoose.connect("mongodb://localhost/todo_app");
+app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -17,7 +18,7 @@ var todoSchema = new mongoose.Schema({
 var Todo = mongoose.model("Todo", todoSchema);
 
 // Enable CORS - Cross-Origin Resource Sharing - so we can access it from the client
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:8000");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -56,28 +57,28 @@ app.get("/todos", function (req, res) {
       if (err) {
         console.log(err);
       } else {
-        if (req.xhr) { // if request was made with AJAX then ..
-          res.json(todos); // send back all todos as JSON
-        } else {
-          res.render("index", {
-            todos: todos
-          }); // otherwise render the index view and pass in all todos with EJS
-        }
+        res.json(todos);
       }
     });
   }
 });
 
 app.post("/todos", function (req, res) {
-  req.body.todo.text = req.sanitize(req.body.todo.text); // prevent script injection
-  var formData = req.body.todo;
-  Todo.create(formData, function (err, newTodo) {
-    if (err) {
-      res.render("new");
-    } else {
-      res.json(newTodo);
-    }
-  });
+  if (req.body.todo.text) {
+    req.body.todo.text = req.sanitize(req.body.todo.text); // prevent script injection
+    var formData = req.body.todo;
+    Todo.create(formData, function (err, newTodo) {
+      if (err) {
+        res.render("new");
+      } else {
+        res.json(newTodo);
+      }
+    });
+  } else {
+    res.json({
+      error: "Invalid input!"
+    });
+  }
 });
 
 app.put("/todos/:id", function (req, res) {
