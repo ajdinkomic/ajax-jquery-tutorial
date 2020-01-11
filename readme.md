@@ -1,3 +1,16 @@
+# AJAX & jQuery Tutorial
+
+### Description:
+This is a client-server To-Do App - SPA (Single Page Application) made using AJAX functionality and jQuery. Forked from [nax3t/ajax-jquery-tutorial](https://github.com/nax3t/ajax-jquery-tutorial) and refactored to SPA.
+
+### Information
+**Details:** Users can add, edit, and delete todos, all on one page. Initial request to root route `app.get('/', function(req,res){...});` is a simple HTTP request, while all other requests (GET, POST, PUT, DELETE) are AJAX requests (XHR). The code is refactored and separated into two mini-apps - client (containing view `index.html` and `ajax.js` file for sending requests) and server (containing `app.js` file for handling requests). The app is started by first starting the server, and then the client.
+
+**Tools and technologies used:** Node.js, Express.js, MongoDB, jQuery, AJAX.
+
+
+
+# Original README:
 # Setup Instructions
 
 - Paste the following into your terminal - `git clone git@github.com:nax3t/ajax-jquery-tutorial.git`
